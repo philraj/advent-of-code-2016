@@ -6,6 +6,7 @@ RRDDLDLRRUULRDLLURLRURDLUURLLLUUDDULLDRURDUDRLRDRDDUUUULDLUDDLRDULDDRDDDDDLRRDDD
 LLRURUDUULRURRUDURRDLUUUDDDDURUUDLLDLRULRUUDUURRLRRUDLLUDLDURURRDDLLRUDDUDLDUUDDLUUULUUURRURDDLUDDLULRRRUURLDLURDULULRULRLDUDLLLLDLLLLRLDLRLDLUULLDDLDRRRURDDRRDURUURLRLRDUDLLURRLDUULDRURDRRURDDDDUUUDDRDLLDDUDURDLUUDRLRDUDLLDDDDDRRDRDUULDDLLDLRUDULLRRLLDUDRRLRURRRRLRDUDDRRDDUUUDLULLRRRDDRUUUDUUURUULUDURUDLDRDRLDLRLLRLRDRDRULRURLDDULRURLRLDUURLDDLUDRLRUDDURLUDLLULDLDDULDUDDDUDRLRDRUUURDUULLDULUUULLLDLRULDULUDLRRURDLULUDUDLDDRDRUUULDLRURLRUURDLULUDLULLRD
 UURUDRRDDLRRRLULLDDDRRLDUDLRRULUUDULLDUDURRDLDRRRDLRDUUUDRDRRLLDULRLUDUUULRULULRUDURDRDDLDRULULULLDURULDRUDDDURLLDUDUUUULRUULURDDDUUUURDLDUUURUDDLDRDLLUDDDDULRDLRUDRLRUDDURDLDRLLLLRLULRDDUDLLDRURDDUDRRLRRDLDDUDRRLDLUURLRLLRRRDRLRLLLLLLURULUURRDDRRLRLRUURDLULRUUDRRRLRLRULLLLUDRULLRDDRDDLDLDRRRURLURDDURRLUDDULRRDULRURRRURLUURDDDUDLDUURRRLUDUULULURLRDDRULDLRLLUULRLLRLUUURUUDUURULRRRUULUULRULDDURLDRRULLRDURRDDDLLUDLDRRRRUULDDD`.split('\n').map(line => line.split(''));
 
+// hash of keypad coordinates mapped to keypad number
 const keypad = {
   '0,0': 1,
   '1,0': 2,
@@ -40,20 +41,24 @@ function move(start, direction) {
   return keypad[end] ? end : start;
 }
 
-function getNextKey(start, commands) {
+function getNextKeyCoord(start, commands) {
+  // consume line of commands and move one step at a time
   return commands.reduce((position, cmd) => {
     return move(position, cmd);
   }, start);
 }
 
-function getBathroomCode(start, input, keyNums = []) {
+function getBathroomCode(start, input, keys = []) {
   const [commands, ...rest] = input;
-  const key = getNextKey(start, commands);
-  const keyNum = keypad[key];
+  const keyCoord = getNextKeyCoord(start, commands);
+  const key = keypad[keyCoord];
 
+  // If there are still lines of commands to consume,
+  // recurse and pass in current state of solution.
+  // Otherwise, return the array of keys, joined as a string.
   return rest.length ?
-    getBathroomCode(key, rest, [...keyNums, keyNum]) :
-    [...keyNums, keyNum].join('');
+    getBathroomCode(keyCoord, rest, [...keys, key]) :
+    [...keys, key].join('');
 }
 
 const code = getBathroomCode([1,1], input);
