@@ -47,8 +47,8 @@ function getDelta(dir) {
 }
 
 // Execute a move based on the current state of our traveller and the distance
-// to be moved, one unit at a time. After each move, increment the number of
-// visits at that coordinate, and if we've been there before, break.
+// to be moved, one unit at a time. After each move, mark the visit in the map,
+// or if we've been there before, note the location of the HQ and break.
 function move(state, distance) {
   const axis = getAxis(state.dir);
   const delta = getDelta(state.dir);
